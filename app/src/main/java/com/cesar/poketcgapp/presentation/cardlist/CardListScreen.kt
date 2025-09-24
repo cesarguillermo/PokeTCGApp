@@ -103,7 +103,7 @@ fun CardCollectionGrid(
                     modifier,
                     cardModel
                 )
-                Log.i ("", cardModel.name)
+
 
             }
         }
@@ -133,8 +133,9 @@ fun CardItem(
             AsyncImage(
                 model = cardModel.image,
                 contentDescription = "card image",
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
+                    .padding(top = 8.dp)
                     .fillMaxWidth()
                     .weight(1f)
                     .clip(MaterialTheme.shapes.medium)

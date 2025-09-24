@@ -17,16 +17,17 @@ class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CardModel> {
         return try {
             val currentPage = params.key ?: 1
-            val pageSize = params.loadSize
+            val pageSize = params.loadSize.coerceAtMost(20)
 
             // API call
             val response = api.getCards(page = currentPage, pageSize = pageSize)
-            Log.i("cesar", response.toString())
+            Log.i("API_RESPONSE", "Status: ${response.totalCount} cards: ${response.cards.size}")
+
             val cards = response.cards.map {
                 CardModel(
                     id = it.id,
                     name = it.name,
-                    image = it.images.large
+                    image = it.images.small
                 )
             }
 
@@ -44,6 +45,8 @@ class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
 
 
         } catch (exception: Exception) {
+            Log.e("API_DEBUG", "Error cargando cards", exception)
+
             LoadResult.Error(exception)
 
         }
