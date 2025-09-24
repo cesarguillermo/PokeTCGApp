@@ -7,9 +7,10 @@ import androidx.activity.enableEdgeToEdge
 
 import com.cesar.poketcgapp.presentation.cardlist.CardListScreen
 import com.cesar.poketcgapp.ui.theme.PokeTCGAppTheme
-import dagger.hilt.EntryPoint
 
-@EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
