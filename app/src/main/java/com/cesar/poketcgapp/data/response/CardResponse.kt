@@ -9,6 +9,6 @@ data class CardResponse (
 )
 
 data class CardImagesResponse (
-    @SerializedName("small") val imageSmall : String,
-    @SerializedName("large") val image : String
+    @SerializedName("small") val small : String,
+    @SerializedName("large") val large : String
 )

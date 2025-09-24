@@ -1,5 +1,6 @@
 package com.cesar.poketcgapp.data
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.cesar.poketcgapp.data.service.CardTCGApiService
@@ -16,16 +17,16 @@ class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CardModel> {
         return try {
             val currentPage = params.key ?: 1
-            val pageSize = params.loadSize.coerceAtMost(20)
+            val pageSize = params.loadSize
 
             // API call
             val response = api.getCards(page = currentPage, pageSize = pageSize)
-
+            Log.i("cesar", response.toString())
             val cards = response.cards.map {
                 CardModel(
                     id = it.id,
                     name = it.name,
-                    image = it.images.image
+                    image = it.images.large
                 )
             }
 
@@ -44,6 +45,7 @@ class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
 
         } catch (exception: Exception) {
             LoadResult.Error(exception)
+
         }
     }
 

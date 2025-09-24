@@ -1,6 +1,6 @@
 package com.cesar.poketcgapp.presentation.cardlist
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -103,6 +103,7 @@ fun CardCollectionGrid(
                     modifier,
                     cardModel
                 )
+                Log.i ("", cardModel.name)
 
             }
         }

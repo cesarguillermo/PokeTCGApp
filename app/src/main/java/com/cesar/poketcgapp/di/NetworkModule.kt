@@ -1,5 +1,6 @@
 package com.cesar.poketcgapp.di
 
+import com.cesar.poketcgapp.ApiKeyInterceptor
 import com.cesar.poketcgapp.data.service.CardTCGApiService
 import dagger.Module
 import dagger.Provides
@@ -8,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.cesar.poketcgapp.BuildConfig
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,5 +33,7 @@ object NetworkModule {
 
     @Provides
     fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient.Builder().build()
+        OkHttpClient.Builder()
+            .addInterceptor(ApiKeyInterceptor(BuildConfig.POKETCG_API_KEY))
+            .build()
 }

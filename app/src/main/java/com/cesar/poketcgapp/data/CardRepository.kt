@@ -11,7 +11,7 @@ import javax.inject.Inject
 class CardRepository @Inject constructor(val api: CardTCGApiService) {
 
     companion object {
-        const val MAX_ITEMS = 10
+        const val MAX_ITEMS = 20
         const val PREFETCH_ITEMS = 4
     }
 

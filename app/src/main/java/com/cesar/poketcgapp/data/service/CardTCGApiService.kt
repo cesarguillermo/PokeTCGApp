@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface CardTCGApiService {
 
-    @GET("/v2/cards")
+    @GET("v2/cards")
     suspend fun getCards(@Query("page") page : Int, @Query("pageSize") pageSize : Int) : ResponseWrapper
 
 
