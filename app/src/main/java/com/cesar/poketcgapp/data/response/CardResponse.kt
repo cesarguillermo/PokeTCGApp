@@ -7,15 +7,17 @@ data class CardResponse (
     @SerializedName("id") val id : String,
     @SerializedName("name") val name : String,
     @SerializedName("image") val images : String,
-    @SerializedName("localId") val localId : String
+    @SerializedName("localId") val localId : String,
 ) {
 
 
     fun toPresentation() : CardModel {
         return CardModel(
             id = id,
-            name =name,
+            name = name,
             image = "$images/high.png"
+
         )
     }
 }
+

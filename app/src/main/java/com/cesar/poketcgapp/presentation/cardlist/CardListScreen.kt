@@ -18,7 +18,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +32,10 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -63,31 +68,45 @@ fun CardListScreen(cardListViewModel: CardListViewModel = hiltViewModel()) {
     // Estado para controlar si estamos en modo búsqueda
     var isSearching by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var showSearchBar by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            SearchBarCards(
-                textFieldState = textFieldState,
-                onSearch = { query ->
-                    searchQuery = query
-                    isSearching = query.isNotBlank()
-                    if (query.isNotBlank()) {
-                        cardListViewModel.updateSearchQuery(query)
-                    }
-                },
-                onClearSearch = {
-                    isSearching = false
-                    searchQuery = ""
-                    textFieldState.edit {  replace(0, length, "")  }
-                    cardListViewModel.updateSearchQuery("") // Limpiar búsqueda
-                },
-                searchResult = if (isSearching) cards else null,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (showSearchBar) {
+                SearchBarCards(
+                    textFieldState = textFieldState,
+                    onSearch = { query ->
+                        searchQuery = query
+                        isSearching = query.isNotBlank()
+                        if (query.isNotBlank()) {
+                            cardListViewModel.updateSearchQuery(query)
+                        }
+                    },
+                    onClearSearch = {
+                        isSearching = false
+                        searchQuery = ""
+                        textFieldState.edit { replace(0, length, "") }
+                        cardListViewModel.updateSearchQuery("")
+                    },
+                    onBackPressed = {
+                        showSearchBar = false
+                        isSearching = false
+                        searchQuery = ""
+                        textFieldState.edit { replace(0, length, "") }
+                        cardListViewModel.updateSearchQuery("")
+                    },
+                    searchResult = if (isSearching) cards else null,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                AppTopBar(
+                    onSearchClick = { showSearchBar = true }
+                )
+            }
         }
     ) { paddingValues ->
 
-        // Contenido principal que siempre se muestra (cuando no hay búsqueda activa)
+        // Contenido principal que siempre se muestra
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -156,6 +175,41 @@ fun CardListScreen(cardListViewModel: CardListViewModel = hiltViewModel()) {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTopBar(
+    onSearchClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = "TCG Market ", //
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        actions = {
+            IconButton(
+                onClick = onSearchClick,
+                modifier = Modifier.padding(all = 8.dp)
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Buscar",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -236,10 +290,16 @@ fun SearchBarCards(
     textFieldState: TextFieldState,
     onSearch: (String) -> Unit,
     onClearSearch: () -> Unit,
+    onBackPressed: () -> Unit,
     searchResult: LazyPagingItems<CardModel>?,
     modifier: Modifier = Modifier
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(true) } // Empieza expandida
+
+    // Auto-expandir al aparecer
+    LaunchedEffect(Unit) {
+        expanded = true
+    }
 
     SearchBar(
         modifier = modifier,
@@ -262,14 +322,32 @@ fun SearchBarCards(
                     expanded = false
                 },
                 expanded = expanded,
-                onExpandedChange = { expanded = it },
-                placeholder = { Text("Buscar") },
+                onExpandedChange = {
+                    expanded = it
+                    // Si se colapsa, volver a la topbar normal
+                    if (!it) {
+                        onBackPressed()
+                    }
+                },
+                placeholder = { Text("Buscar personajes") },
+                leadingIcon = {
+                    IconButton(
+                        onClick = {
+                            onBackPressed()
+                        }
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                },
                 trailingIcon = {
                     if (textFieldState.text.isNotEmpty()) {
                         IconButton(
                             onClick = {
+                                textFieldState.edit { replace(0, length, "") }
                                 onClearSearch()
-                                expanded = false
                             }
                         ) {
                             Icon(
@@ -282,7 +360,12 @@ fun SearchBarCards(
             )
         },
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = {
+            expanded = it
+            if (!it) {
+                onBackPressed()
+            }
+        },
     ) {
         // Solo mostrar contenido de búsqueda si hay resultados de búsqueda
         searchResult?.let { results ->
