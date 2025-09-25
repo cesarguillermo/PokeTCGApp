@@ -8,7 +8,7 @@ import com.cesar.poketcgapp.presentation.model.CardModel
 import okio.IOException
 import javax.inject.Inject
 
-class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
+class CardPagingSource @Inject constructor(private val api: CardTCGApiService, private val query : String) :
     PagingSource<Int, CardModel>() {
 
         companion object {
@@ -29,11 +29,16 @@ class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
 
 
             // API call
-            val response = api.getCards(page = currentPage, pageSize = PAGE_SIZE)
+            val response = if (query.isBlank()) {
+                api.getCards(page = currentPage, pageSize = PAGE_SIZE)
+            }  else {
+                api.searchCardsByName(name = query,page = currentPage, pageSize = PAGE_SIZE )
+            }
 
             val cards = response
                 .filter {
                     it.localId != "!" && it.localId != "%3F"
+                            && !it.images.isNullOrBlank()
                 }
                 .map {
                 it.toPresentation()

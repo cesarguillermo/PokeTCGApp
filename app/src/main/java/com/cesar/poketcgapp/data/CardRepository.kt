@@ -21,7 +21,18 @@ class CardRepository @Inject constructor(val api: CardTCGApiService) {
                 pageSize = MAX_ITEMS, prefetchDistance = PREFETCH_ITEMS
             ),
             pagingSourceFactory = {
-                CardPagingSource(api)
+                CardPagingSource(api,"")
             }).flow
     }
+
+    fun searchCardsPager (query : String ) : Flow<PagingData<CardModel>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = MAX_ITEMS, prefetchDistance = PREFETCH_ITEMS
+            ),
+            pagingSourceFactory = {
+                CardPagingSource(api,query)
+            }).flow
+    }
+
 }
