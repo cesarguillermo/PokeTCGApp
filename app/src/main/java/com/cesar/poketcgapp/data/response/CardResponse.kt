@@ -1,14 +1,21 @@
 package com.cesar.poketcgapp.data.response
 
+import com.cesar.poketcgapp.presentation.model.CardModel
 import com.google.gson.annotations.SerializedName
 
 data class CardResponse (
     @SerializedName("id") val id : String,
     @SerializedName("name") val name : String,
-    @SerializedName("images") val images : CardImagesResponse
-)
+    @SerializedName("image") val images : String,
+    @SerializedName("localId") val localId : String
+) {
 
-data class CardImagesResponse (
-    @SerializedName("small") val small : String,
-    @SerializedName("large") val large : String
-)
+
+    fun toPresentation() : CardModel {
+        return CardModel(
+            id = id,
+            name =name,
+            image = "$images/high.png"
+        )
+    }
+}

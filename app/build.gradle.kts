@@ -1,5 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,9 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
 
 }
-val localPropertiesFile = rootProject.file("local.properties")
-val localProperties = Properties()
-localProperties.load(FileInputStream(localPropertiesFile))
+
 android {
     namespace = "com.cesar.poketcgapp"
     compileSdk = 36
@@ -25,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "POKETCG_API_KEY", "\"${localProperties["POKETCG_API_KEY"]}\"")
+
 
 
     }
@@ -48,7 +44,6 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 }
 

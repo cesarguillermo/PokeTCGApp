@@ -1,6 +1,5 @@
 package com.cesar.poketcgapp.di
 
-import com.cesar.poketcgapp.data.ApiKeyInterceptor
 import com.cesar.poketcgapp.data.service.CardTCGApiService
 import dagger.Module
 import dagger.Provides
@@ -9,8 +8,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.cesar.poketcgapp.BuildConfig
-import java.util.concurrent.TimeUnit
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -19,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 object NetworkModule {
 
-    private const val BASE_URL = "https://api.pokemontcg.io/"
+    private const val BASE_URL = "https://api.tcgdex.net/"
 
     @Provides
     fun provideApiService(retrofit: Retrofit): CardTCGApiService =
@@ -34,10 +32,5 @@ object NetworkModule {
 
     @Provides
     fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS) // conexión
-            .readTimeout(60, TimeUnit.SECONDS)    // lectura
-            .writeTimeout(30, TimeUnit.SECONDS)   // escritura
-            .addInterceptor(ApiKeyInterceptor(BuildConfig.POKETCG_API_KEY))
-            .build()
+        OkHttpClient.Builder().build()
 }

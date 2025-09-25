@@ -10,30 +10,38 @@ import javax.inject.Inject
 
 class CardPagingSource @Inject constructor(private val api: CardTCGApiService) :
     PagingSource<Int, CardModel>() {
+
+        companion object {
+            private  const val PAGE_SIZE=10
+        }
+
+
     override fun getRefreshKey(state: PagingState<Int, CardModel>): Int? {
-        return state.anchorPosition
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CardModel> {
         return try {
             val currentPage = params.key ?: 1
-            val pageSize = params.loadSize.coerceAtMost(20)
+
 
             // API call
-            val response = api.getCards(page = currentPage, pageSize = pageSize)
-            Log.i("API_RESPONSE", "Status: ${response.totalCount} cards: ${response.cards.size}")
+            val response = api.getCards(page = currentPage, pageSize = PAGE_SIZE)
 
-            val cards = response.cards.map {
-                CardModel(
-                    id = it.id,
-                    name = it.name,
-                    image = it.images.small
-                )
+            val cards = response
+                .filter {
+                    it.localId != "!" && it.localId != "%3F"
+                }
+                .map {
+                it.toPresentation()
             }
 
+
             //  Calculate the next and previous pages
-            val nextKey =
-                if (currentPage * pageSize >= response.totalCount) null else currentPage + 1
+            val nextKey = if (cards.isEmpty()) null else currentPage + 1
             val prevKey = if (currentPage == 1) null else currentPage - 1
 
             LoadResult.Page(
