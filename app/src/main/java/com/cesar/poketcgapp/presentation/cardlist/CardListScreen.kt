@@ -17,9 +17,13 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
@@ -54,72 +58,104 @@ import com.cesar.poketcgapp.presentation.model.CardModel
 fun CardListScreen(cardListViewModel: CardListViewModel = hiltViewModel()) {
 
     val textFieldState = rememberTextFieldState()
-
-
     val cards = cardListViewModel.cards.collectAsLazyPagingItems()
 
+    // Estado para controlar si estamos en modo búsqueda
+    var isSearching by rememberSaveable { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
-        topBar =  {
+        topBar = {
             SearchBarCards(
                 textFieldState = textFieldState,
-                onSearch = {query -> cardListViewModel.updateSearchQuery(query)},
-                searchResult = cards,
+                onSearch = { query ->
+                    searchQuery = query
+                    isSearching = query.isNotBlank()
+                    if (query.isNotBlank()) {
+                        cardListViewModel.updateSearchQuery(query)
+                    }
+                },
+                onClearSearch = {
+                    isSearching = false
+                    searchQuery = ""
+                    textFieldState.edit {  replace(0, length, "")  }
+                    cardListViewModel.updateSearchQuery("") // Limpiar búsqueda
+                },
+                searchResult = if (isSearching) cards else null,
                 modifier = Modifier.fillMaxWidth()
             )
-
         }
-    ) { paddingValues  ->
-        Box(modifier = Modifier.padding(paddingValues))
-        when {
-            cards.loadState.refresh is LoadState.Loading && cards.itemCount == 0 -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(64.dp), color = Color.White
-                    )
-                }
-            }
+    ) { paddingValues ->
 
-            cards.loadState.refresh is LoadState.NotLoading && cards.itemCount == 0 -> {
-                Text(text = "Todavía no hay personajes")
-            }
-
-            cards.loadState.hasError -> {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.Red), contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "Ha ocurrido un error")
-                }
-            }
-
-            else -> {
-                CardCollectionGrid(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    cards = cards,
-                )
-
-                if (cards.loadState.append is LoadState.Loading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        // Contenido principal que siempre se muestra (cuando no hay búsqueda activa)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            when {
+                cards.loadState.refresh is LoadState.Loading && cards.itemCount == 0 -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(64.dp), color = Color.White
+                            modifier = Modifier.size(64.dp),
+                            color = Color.White
                         )
                     }
                 }
 
+                cards.loadState.refresh is LoadState.NotLoading && cards.itemCount == 0 -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (isSearching) "No se encontraron resultados para \"$searchQuery\""
+                            else "Todavía no hay personajes"
+                        )
+                    }
+                }
+
+                cards.loadState.hasError -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Red),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Ha ocurrido un error")
+                    }
+                }
+
+                else -> {
+                    CardCollectionGrid(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        cards = cards,
+                    )
+
+                    // Loading indicator para append
+                    if (cards.loadState.append is LoadState.Loading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(32.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
             }
-
-
         }
-
     }
-
-
-
-
-
 }
 
 @Composable
@@ -129,24 +165,25 @@ fun CardCollectionGrid(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(vertical = 16.dp),
+        contentPadding = PaddingValues(
+            start = 8.dp,
+            end = 8.dp,
+            top = 16.dp,
+            bottom = 64.dp
+        ),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
-        items(cards.itemCount) {
-            cards[it]?.let { cardModel ->
+        items(cards.itemCount) { index ->
+            cards[index]?.let { cardModel ->
                 CardItem(
-                    modifier,
-                    cardModel
+                    modifier = Modifier,
+                    cardModel = cardModel
                 )
-
-
             }
         }
     }
-
-
 }
 
 @Composable
@@ -176,7 +213,6 @@ fun CardItem(
                     .fillMaxWidth()
                     .weight(1f)
                     .clip(MaterialTheme.shapes.medium)
-
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -186,15 +222,12 @@ fun CardItem(
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 maxLines = 1,
-                modifier = Modifier.fillMaxWidth()
-
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             )
-
-
         }
-
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -202,66 +235,87 @@ fun CardItem(
 fun SearchBarCards(
     textFieldState: TextFieldState,
     onSearch: (String) -> Unit,
-    searchResult: LazyPagingItems<CardModel>,
+    onClearSearch: () -> Unit,
+    searchResult: LazyPagingItems<CardModel>?,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .semantics { isTraversalGroup = true }
+    SearchBar(
+        modifier = modifier,
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = textFieldState.text.toString(),
+                onQueryChange = { newText ->
+                    textFieldState.edit { replace(0, length, newText) }
+                    // Si el texto está vacío, limpiar búsqueda
+                    if (newText.isBlank()) {
+                        onClearSearch()
+                    }
+                },
+                onSearch = { query ->
+                    if (query.isNotBlank()) {
+                        onSearch(query)
+                    } else {
+                        onClearSearch()
+                    }
+                    expanded = false
+                },
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                placeholder = { Text("Buscar") },
+                trailingIcon = {
+                    if (textFieldState.text.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                onClearSearch()
+                                expanded = false
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = "Limpiar búsqueda"
+                            )
+                        }
+                    }
+                }
+            )
+        },
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
     ) {
-        SearchBar(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .semantics { traversalIndex = 0f },
-            inputField = {
-                SearchBarDefaults.InputField(
-                    query = textFieldState.text.toString(),
-                    onQueryChange = { newText ->
-                        textFieldState.edit { replace(0, length, newText) }
-                    },
-                    onSearch = {
-                        onSearch(textFieldState.text.toString())
-                        expanded = false
-                    },
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    placeholder = { Text("Buscar") }
-                )
-            },
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-        ) {
-            // 👇 Resultados en grid dentro del cuerpo expandido
+        // Solo mostrar contenido de búsqueda si hay resultados de búsqueda
+        searchResult?.let { results ->
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(vertical = 16.dp),
+                contentPadding = PaddingValues(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(searchResult.itemCount) { index ->
-                    val card = searchResult[index]
+                items(results.itemCount) { index ->
+                    val card = results[index]
                     if (card != null) {
                         CardItem(Modifier, card)
                     }
                 }
 
-                searchResult.apply {
+                results.apply {
                     when {
                         loadState.refresh is LoadState.Loading -> {
                             item(span = { GridItemSpan(maxLineSpan) }) {
-                                CircularProgressIndicator(
+                                Box(
                                     modifier = Modifier
-                                        .padding(16.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                )
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
 
-                        loadState.append is LoadState.Error -> {
+                        loadState.append is LoadState.Error || loadState.refresh is LoadState.Error -> {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 Text(
                                     text = "Error cargando resultados",
@@ -272,6 +326,20 @@ fun SearchBarCards(
                         }
                     }
                 }
+            }
+        } ?: run {
+            // Contenido por defecto cuando no hay búsqueda
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Escribe para buscar personajes",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
