@@ -4,6 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.cesar.poketcgapp.data.service.CardTCGApiService
+import com.cesar.poketcgapp.presentation.model.CardDetailModel
 import com.cesar.poketcgapp.presentation.model.CardModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -33,6 +34,10 @@ class CardRepository @Inject constructor(val api: CardTCGApiService) {
             pagingSourceFactory = {
                 CardPagingSource(api,query)
             }).flow
+    }
+
+    suspend fun getCardDetail(id : String ) : CardDetailModel {
+        return api.getCardDetail(id).toPresentation()
     }
 
 }
