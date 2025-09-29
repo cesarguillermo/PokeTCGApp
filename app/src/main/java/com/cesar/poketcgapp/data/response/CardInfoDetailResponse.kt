@@ -1,18 +1,20 @@
 package com.cesar.poketcgapp.data.response
 
+import android.util.Log
 import com.cesar.poketcgapp.presentation.model.CardDetailModel
 import com.google.gson.annotations.SerializedName
 
 data class CardInfoDetailResponse(
     @SerializedName("id") val id: String,
     @SerializedName("localId") val localId: String,
+    @SerializedName("image") val image : String,
     @SerializedName("name") val name: String,
     @SerializedName("set") val set: CardSetInfo,
     @SerializedName("pricing") val pricing: PricingResponse
 ) {
 
     fun toPresentation () : CardDetailModel {
-        val imageUrl = "https://assets.tcgdex.net/en/${set.id}/$localId/high.png"
+
 
         return CardDetailModel(
             id = id,
@@ -21,7 +23,7 @@ data class CardInfoDetailResponse(
             setName = set.name,
             totalCards = set.cardCount.total,
             symbolUrl = "${set.symbol}.png",
-            imageUrl = imageUrl,
+            imageUrl  = "$image/high.png",
             marketPrice = pricing.cardMarket?.avg,
             currency = pricing.cardMarket?.unit
         )

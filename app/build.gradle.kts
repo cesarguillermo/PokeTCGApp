@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.junit.ktx)
 
     kapt(libs.dagger.hilt.compiler)
 
@@ -74,6 +75,7 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose.v120)
+
 
 
     testImplementation(libs.junit)

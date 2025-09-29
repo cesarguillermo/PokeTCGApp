@@ -1,5 +1,6 @@
 package com.cesar.poketcgapp.data.response
 
+import android.util.Log
 import com.cesar.poketcgapp.presentation.model.CardModel
 import com.google.gson.annotations.SerializedName
 
@@ -12,10 +13,11 @@ data class CardResponse (
 
 
     fun toPresentation() : CardModel {
+
         return CardModel(
             id = id,
             name = name,
-            image = "$images/high.png"
+            image = "$images/low.png"
 
         )
     }
