@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ fun CardItem(
             .aspectRatio(0.7f)
             .clip(MaterialTheme.shapes.medium)
             .clickable { onClick() }
+            .testTag("card_${cardModel.id}")
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

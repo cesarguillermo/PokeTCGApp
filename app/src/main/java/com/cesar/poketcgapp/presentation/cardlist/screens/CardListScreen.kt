@@ -53,6 +53,7 @@ fun CardListScreen(
 
 
 
+
     Scaffold(
         topBar = {
             if (showSearchBar) {
@@ -79,7 +80,12 @@ fun CardListScreen(
                         cardListViewModel.updateSearchQuery("")
                     },
                     searchResult = if (isSearching) cards else null,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onCardClick = { cardId ->
+                        showSearchBar = false
+                        isSearching = false
+                        onCardClick(cardId)
+                    }
                 )
             } else {
                 AppTopBar(

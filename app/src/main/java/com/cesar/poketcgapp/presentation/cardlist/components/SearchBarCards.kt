@@ -1,5 +1,6 @@
 package com.cesar.poketcgapp.presentation.cardlist.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -43,6 +45,7 @@ fun SearchBarCards(
     onClearSearch: () -> Unit,
     onBackPressed: () -> Unit,
     searchResult: LazyPagingItems<CardModel>?,
+    onCardClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(true) } // Empieza expandida
@@ -53,7 +56,7 @@ fun SearchBarCards(
     }
 
     SearchBar(
-        modifier = modifier,
+        modifier = modifier.testTag("search_bar"),
         inputField = {
             SearchBarDefaults.InputField(
                 query = textFieldState.text.toString(),
@@ -130,7 +133,7 @@ fun SearchBarCards(
                 items(results.itemCount) { index ->
                     val card = results[index]
                     if (card != null) {
-                        CardItem(Modifier, card)
+                        CardItem(modifier = Modifier.testTag("card_${card.id}"), card, onClick = { onCardClick(card.id) })
                     }
                 }
 
