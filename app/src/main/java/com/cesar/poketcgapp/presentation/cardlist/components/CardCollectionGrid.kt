@@ -16,6 +16,7 @@ fun CardCollectionGrid(
     cards: LazyPagingItems<CardModel>,
     onCardClick : (CardModel) -> Unit
 ) {
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(

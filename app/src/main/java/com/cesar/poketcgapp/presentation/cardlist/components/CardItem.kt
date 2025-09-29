@@ -1,7 +1,9 @@
 package com.cesar.poketcgapp.presentation.cardlist.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +30,7 @@ import com.cesar.poketcgapp.presentation.model.CardModel
 fun CardItem(
     modifier: Modifier = Modifier,
     cardModel: CardModel,
-    onClick : () -> Unit = {}
+    onClick: () -> Unit = {}
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -38,7 +41,15 @@ fun CardItem(
             .aspectRatio(0.7f)
             .clip(MaterialTheme.shapes.medium)
             .clickable { onClick() }
-            .testTag("card_${cardModel.id}")
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                        MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ),
+                shape = MaterialTheme.shapes.medium
+            )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,15 +68,21 @@ fun CardItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = cardModel.name,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                maxLines = 1,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-            )
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = cardModel.name,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }

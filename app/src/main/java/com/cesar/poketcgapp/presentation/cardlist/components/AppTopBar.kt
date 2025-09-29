@@ -43,8 +43,8 @@ fun AppTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onTertiaryContainer
         ),
         modifier = modifier
     )

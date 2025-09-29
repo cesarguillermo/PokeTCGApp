@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
 
     kapt(libs.dagger.hilt.compiler)
 
@@ -76,6 +77,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose.v120)
 
+    implementation(libs.androidx.core.splashscreen)
 
 
     testImplementation(libs.junit)

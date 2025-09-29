@@ -1,6 +1,5 @@
 package com.cesar.poketcgapp.presentation.cardlist.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -83,7 +82,7 @@ fun SearchBarCards(
                         onBackPressed()
                     }
                 },
-                placeholder = { Text("Buscar personajes") },
+                placeholder = { Text("Buscar Pokemon") },
                 leadingIcon = {
                     IconButton(
                         onClick = {
@@ -173,7 +172,7 @@ fun SearchBarCards(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Escribe para buscar personajes",
+                    text = "Escribe para buscar Pokemon",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
