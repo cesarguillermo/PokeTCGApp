@@ -354,13 +354,17 @@ class CardListScreenTest {
 
 ## 📱 Capturas de Pantalla
 
-<div align="center">
-  <img src="screenshots/card_list_screenshot.png" alt="Lista de Cartas" width="200"/>
-  <img src="screenshots/search_bar_result_screenshot.png" alt="Resultados de Búsqueda" width="200"/>
-  <img src="screenshots/card_detail01_screenshot.png" alt="Detalle de Carta sin Precio" width="200"/>
-  <img src="screenshots/card_detail02_info_screenshot.png" alt="Detalle de Carta con set correspondiente" width="200"/>
-  <img src="screenshots/card_detail02_price_screenshot.png" alt="Precio medio  de Carta del mercado europe" width="200"/>
-</div>
+### Pantalla Principal
+| Lista de Cartas | Resultados de Búsqueda |
+|:---:|:---:|
+| <img src="screenshots/card_list_screenshot.png" alt="Lista de Cartas" width="200"/> | <img src="screenshots/search_bar_result_screenshot.png" alt="Resultados de Búsqueda" width="200"/> |
+| **Vista principal con grid de cartas Pokémon TCG** | **Búsqueda en tiempo real con filtros** |
+
+### Pantalla de Detalle de Carta
+| Vista Superior | Información del Set | Precios del Mercado |
+|:---:|:---:|:---:|
+| <img src="screenshots/card_detail01_screenshot.png" alt="Detalle de Carta - Vista Superior" width="200"/> | <img src="screenshots/card_detail02_info_screenshot.png" alt="Detalle de Carta - Información del Set" width="200"/> | <img src="screenshots/card_detail02_price_screenshot.png" alt="Detalle de Carta - Precios del Mercado" width="200"/> |
+| **Información básica e imagen de la carta** | **Detalles del set, rareza y estadísticas** *(requiere scroll)* | **Precios promedio del mercado europeo** *(requiere scroll)* |
 
 ## 🚀 Instalación y Configuración
 
