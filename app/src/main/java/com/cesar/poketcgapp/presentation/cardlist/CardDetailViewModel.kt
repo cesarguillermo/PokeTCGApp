@@ -14,11 +14,26 @@ import javax.inject.Inject
 class CardDetailViewModel @Inject constructor(private val cardRepository: CardRepository) : ViewModel() {
 
     private val _cardDetail = MutableStateFlow<CardDetailModel?>(null)
-    val cardDetail : StateFlow<CardDetailModel?> = _cardDetail
+    val cardDetail: StateFlow<CardDetailModel?> = _cardDetail
 
-    fun loadCardDetail(id : String) {
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
+    fun loadCardDetail(id: String) {
         viewModelScope.launch {
-            _cardDetail.value = cardRepository.getCardDetail(id)
+            _isLoading.value = true
+            _error.value = null
+
+            try {
+                _cardDetail.value = cardRepository.getCardDetail(id)
+            } catch (e: Exception) {
+                _error.value = "Error al cargar los detalles: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

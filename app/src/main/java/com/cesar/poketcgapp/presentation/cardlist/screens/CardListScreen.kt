@@ -34,11 +34,13 @@ import com.cesar.poketcgapp.presentation.cardlist.CardListViewModel
 import com.cesar.poketcgapp.presentation.cardlist.components.AppTopBar
 import com.cesar.poketcgapp.presentation.cardlist.components.CardCollectionGrid
 import com.cesar.poketcgapp.presentation.cardlist.components.SearchBarCards
-import com.cesar.poketcgapp.presentation.model.CardModel
 
 
 @Composable
-fun CardListScreen(cardListViewModel: CardListViewModel = hiltViewModel()) {
+fun CardListScreen(
+    cardListViewModel: CardListViewModel = hiltViewModel(),
+    onCardClick: (String) -> Unit
+) {
 
     val textFieldState = rememberTextFieldState()
     val cards = cardListViewModel.cards.collectAsLazyPagingItems()
@@ -48,7 +50,7 @@ fun CardListScreen(cardListViewModel: CardListViewModel = hiltViewModel()) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var showSearchBar by rememberSaveable { mutableStateOf(false) }
 
-    var selectedCard by rememberSaveable { mutableStateOf<CardModel?>(null) }
+
 
 
     Scaffold(
@@ -135,7 +137,7 @@ fun CardListScreen(cardListViewModel: CardListViewModel = hiltViewModel()) {
                             .fillMaxSize()
                             .padding(8.dp),
                         cards = cards,
-                        onCardClick = {card -> selectedCard = card}
+                        onCardClick = { card -> onCardClick(card.id)  }
                     )
 
                     // Loading indicator para append

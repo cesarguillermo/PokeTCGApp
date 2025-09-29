@@ -20,7 +20,7 @@ data class CardInfoDetailResponse(
             localId = localId,
             setName = set.name,
             totalCards = set.cardCount.total,
-            symbolUrl = set.symbol,
+            symbolUrl = "${set.symbol}.png",
             imageUrl = imageUrl,
             marketPrice = pricing.cardMarket?.avg,
             currency = pricing.cardMarket?.unit
